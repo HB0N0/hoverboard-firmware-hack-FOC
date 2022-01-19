@@ -78,6 +78,7 @@ const command_entry commands[] = {
     {READ   ,"GET"     ,printAllParamDef  ,printParamDef   ,NULL           ,"Get Parameter/Variable"},
     {READ   ,"HELP"    ,printAllParamHelp ,printParamHelp  ,NULL           ,"Command/Parameter/Variable Help"},
     {READ   ,"WATCH"   ,NULL              ,watchParamVal   ,NULL           ,"Toggle Parameter/Variable Watch"},
+    {READ   ,"WATCHALL",NULL              ,defaultDebugOut ,NULL           ,"Start Default Serial Debug Log"},
     {WRITE  ,"SET"     ,NULL              ,NULL            ,setParamValExt ,"Set Parameter"},
     {WRITE  ,"INIT"    ,NULL              ,initParamVal    ,NULL           ,"Init Parameter from EEPROM or CONFIG.H"},
     {WRITE  ,"SAVE"    ,saveAllParamVal   ,NULL            ,NULL           ,"Save Parameters to EEPROM"},
@@ -297,6 +298,27 @@ int8_t printParamVal(){
     printf("%s:%li ",params[watchParamList[i]].name,getParamValExt(watchParamList[i]));
   }
   if (i>0) printf("\r\n");
+  return 1;
+}
+
+int8_t defaultLogActive = 0;
+int8_t defaultDebugOut(){
+  defaultLogActive = !defaultLogActive;
+  return 1;
+}
+
+int8_t printDefaultOut(){
+  if(defaultLogActive){
+    /*printf("in1:%i in2:%i cmdL:%i cmdR:%i BatADC:%i BatV:%i TempADC:%i Temp:%i\r\n",
+            input1[inIdx].raw,        // 1: INPUT1
+            input2[inIdx].raw,        // 2: INPUT2
+            cmdL,                     // 3: output command: [-1000, 1000]
+            cmdR,                     // 4: output command: [-1000, 1000]
+            adc_buffer.batt1,         // 5: for battery voltage calibration
+            batVoltageCalib,          // 6: for verifying battery voltage calibration
+            board_temp_adcFilt,       // 7: for board temperature calibration
+            board_temp_deg_c); */
+  }
   return 1;
 }
 
@@ -606,6 +628,9 @@ void process_debug()
   
   // Print parameters from watch list
   printParamVal();
+
+  //Print default log if active
+  printDefaultOut();
 
   // Show Error if any
   if(command.error> 0){

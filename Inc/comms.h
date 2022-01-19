@@ -65,6 +65,9 @@ int8_t printAllParamDef();
 void printError(uint8_t errornum );
 int8_t watchParamVal(uint8_t index);
 
+int8_t defaultDebugOut();
+int8_t printDefaultOut();
+
 int8_t findCommand(uint8_t *userCommand, uint32_t len);
 int8_t findParam(uint8_t *userCommand, uint32_t len);
 void handle_input(uint8_t *userCommand, uint32_t len);
