@@ -197,7 +197,7 @@ static uint8_t button1;                 // Blue
 static uint8_t button2;                 // Green
 #endif
 
-#ifdef VARIANT_HOVERCAR
+#if defined(VARIANT_HOVERCAR) || defined(VARIANT_BOLLERWAGEN)
 static uint8_t brakePressed;
 #endif
 
@@ -1046,6 +1046,10 @@ void readCommand(void) {
     }
     #endif
 
+    #ifdef VARIANT_BOLLERWAGEN
+      brakePressed = (uint8_t) (input2[inIdx].cmd < -50 && speedAvg > 10) || (input2[inIdx].cmd > 50 && speedAvg < -10);
+    #endif
+
     #if defined(SUPPORT_BUTTONS_LEFT) || defined(SUPPORT_BUTTONS_RIGHT)
       button1 = !HAL_GPIO_ReadPin(BUTTON1_PORT, BUTTON1_PIN);
       button2 = !HAL_GPIO_ReadPin(BUTTON2_PORT, BUTTON2_PIN);
@@ -1322,13 +1326,14 @@ void sideboardLeds(uint8_t *leds) {
     // Brake: use LED5 (upper Blue)
     // brakePressed == 1, turn on led
     // brakePressed == 0, turn off led
-    #ifdef VARIANT_HOVERCAR
+    #if defined(VARIANT_HOVERCAR) || defined(VARIANT_BOLLERWAGEN)
       if (brakePressed) {
         *leds |= LED5_SET;
       } else if (!brakePressed && !backwardDrive) {
         *leds &= ~LED5_SET;
       }
     #endif
+
 
     // Battery Level Indicator: use LED1, LED2, LED3
     if (main_loop_counter % BAT_BLINK_INTERVAL == 0) {              //  | RED (LED1) | YELLOW (LED3) | GREEN (LED2) |
