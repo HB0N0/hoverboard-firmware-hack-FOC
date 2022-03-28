@@ -1296,34 +1296,55 @@ void usart_process_sideboard(SerialSideboard *Sideboard_in, SerialSideboard *Sid
 void sideboardLeds(uint8_t *leds) {
   #if defined(SIDEBOARD_SERIAL_USART2) || defined(SIDEBOARD_SERIAL_USART3)
     #ifndef VARIANT_BOLLERWAGEN
-    // Enable flag: use LED4 (bottom Blue)
-    // enable == 1, turn on led
-    // enable == 0, blink led
-    if (enable) {
-      *leds |= LED4_SET;
-    } else if (!enable && (main_loop_counter % 20 == 0)) {
-      *leds ^= LED4_SET;
-    }
+      // Enable flag: use LED4 (bottom Blue)
+      // enable == 1, turn on led
+      // enable == 0, blink led
+      if (enable) {
+        *leds |= LED4_SET;
+      } else if (!enable && (main_loop_counter % 20 == 0)) {
+        *leds ^= LED4_SET;
+      }
 
-    // Backward Drive: use LED5 (upper Blue)
-    // backwardDrive == 1, blink led
-    // backwardDrive == 0, turn off led
-    if (backwardDrive && (main_loop_counter % 50 == 0)) {
-      *leds ^= LED5_SET;
-    }
+      // Backward Drive: use LED5 (upper Blue)
+      // backwardDrive == 1, blink led
+      // backwardDrive == 0, turn off led
+      if (backwardDrive && (main_loop_counter % 50 == 0)) {
+        *leds ^= LED5_SET;
+      }
+      
+
+      // Brake: use LED5 (upper Blue)
+      // brakePressed == 1, turn on led
+      // brakePressed == 0, turn off led
+      #ifdef VARIANT_HOVERCAR
+        if (brakePressed) {
+          *leds |= LED5_SET;
+        } else if (!brakePressed && !backwardDrive) {
+          *leds &= ~LED5_SET;
+        }
+      #endif
     #endif
 
-    // Brake: use LED5 (upper Blue)
-    // brakePressed == 1, turn on led
-    // brakePressed == 0, turn off led
-    #if defined(VARIANT_HOVERCAR) || defined(VARIANT_BOLLERWAGEN)
+
+    #ifdef VARIANT_BOLLERWAGEN
+      // Backward Drive: use LED4 (bottom Blue)
+      // backwardDrive == 1, turn on led
+      // backwardDrive == 0, turn off led
+      if (backwardDrive) {
+        *leds |= LED4_SET;
+      } else {
+        *leds &= ~LED4_SET;
+      }
+
+      // Brake: use LED5 (upper Blue)
+      // brakePressed == 1, turn on led
+      // brakePressed == 0, turn off led
       if (brakePressed) {
         *leds |= LED5_SET;
       } else if (!brakePressed && !backwardDrive) {
         *leds &= ~LED5_SET;
       }
     #endif
-
 
     // Battery Level Indicator: use LED1, LED2, LED3
     if (main_loop_counter % BAT_BLINK_INTERVAL == 0) {              //  | RED (LED1) | YELLOW (LED3) | GREEN (LED2) |
