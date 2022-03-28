@@ -1047,7 +1047,7 @@ void readCommand(void) {
     #endif
 
     #ifdef VARIANT_BOLLERWAGEN
-      brakePressed = (uint8_t) (input2[inIdx].cmd < -50 && speedAvg > 10) || (input2[inIdx].cmd > 50 && speedAvg < -10);
+      brakePressed = (uint8_t) (input2[inIdx].cmd < -20 && speedAvg > 1) || (input2[inIdx].cmd > 20 && speedAvg < -1);
     #endif
 
     #if defined(SUPPORT_BUTTONS_LEFT) || defined(SUPPORT_BUTTONS_RIGHT)
@@ -1307,6 +1307,7 @@ void usart_process_sideboard(SerialSideboard *Sideboard_in, SerialSideboard *Sid
  */
 void sideboardLeds(uint8_t *leds) {
   #if defined(SIDEBOARD_SERIAL_USART2) || defined(SIDEBOARD_SERIAL_USART3)
+    #ifndef VARIANT_BOLLERWAGEN
     // Enable flag: use LED4 (bottom Blue)
     // enable == 1, turn on led
     // enable == 0, blink led
@@ -1322,6 +1323,7 @@ void sideboardLeds(uint8_t *leds) {
     if (backwardDrive && (main_loop_counter % 50 == 0)) {
       *leds ^= LED5_SET;
     }
+    #endif
 
     // Brake: use LED5 (upper Blue)
     // brakePressed == 1, turn on led
